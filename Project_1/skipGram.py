@@ -31,7 +31,10 @@ class mSkipGram:
     def __init__(self, sentences, nEmbed=100, negativeRate=5, winSize=5, minCount=5):
         # winSize: Size of th window
         # minCount : minimum times word appears
-
+        
+        """ code added:"""
+        
+        
         self.winSize = winSize
         self.minCount = minCount
 
@@ -64,7 +67,11 @@ class mSkipGram:
                 context_matrix = np.c_[context_matrix, word_to_vec(context_word)]
         context_matrix = context_matrix[:, 1:]
         return context_matrix
-
+    
+    
+        """end code added"""
+        
+        
         raise NotImplementedError('implement it!')
 
     def train(self, stepsize, epochs):
