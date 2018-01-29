@@ -116,3 +116,6 @@ if __name__ == '__main__':
         sg = mSkipGram.load(opts.model)
         for a, b, _ in pairs:
             print sg.similarity(a, b)
+
+
+## test
