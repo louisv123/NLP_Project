@@ -8,8 +8,8 @@ from scipy.special import expit
 from sklearn.preprocessing import normalize
 
 
-__authors__ = ['author1', 'author2', 'author3']
-__emails__ = ['fatherchristmoas@northpole.dk', 'toothfairy@blackforest.no', 'easterbunny@greenfield.de']
+__authors__ = ['Louis_Veillon, Quentin_Boutoille-Blois']
+__emails__ = ['b00727589@essec.edu', 'b00527749@essec.edu']
 
 
 def text2sentences(path):
@@ -31,10 +31,8 @@ class mSkipGram:
     def __init__(self, sentences, nEmbed=100, negativeRate=5, winSize=5, minCount=5):
         # winSize: Size of th window
         # minCount : minimum times word appears
-        
         """ code added:"""
-        
-        
+
         self.winSize = winSize
         self.minCount = minCount
 
@@ -67,11 +65,9 @@ class mSkipGram:
                 context_matrix = np.c_[context_matrix, word_to_vec(context_word)]
         context_matrix = context_matrix[:, 1:]
         return context_matrix
-    
-    
+
         """end code added"""
-        
-        
+
         raise NotImplementedError('implement it!')
 
     def train(self, stepsize, epochs):
@@ -125,4 +121,4 @@ if __name__ == '__main__':
             print sg.similarity(a, b)
 
 
-## test
+# test
