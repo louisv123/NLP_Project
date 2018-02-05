@@ -65,7 +65,7 @@ class mySkipGram:
                     self.vocabulary[word] += 1
 
         for word, value in self.vocabulary.items():
-            if value > minCount + 1:
+            if value > minCount:
                 self.vocabulary_filtered[word] = value
 
         self.vocabulary = self.vocabulary_filtered
