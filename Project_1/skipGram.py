@@ -48,7 +48,14 @@ class mySkipGram:
 
     def set_vocab(self):
         self.vocabulary = {}
+<<<<<<< HEAD
         for sentence in self.sentences:
+=======
+    
+    def get_vocabulary(self):
+
+        for sentence in sentences:
+>>>>>>> 45f323861f1a00cea90793f6f968675eab238ca7
             for word in sentence:
                 if word not in self.vocabulary:
                     self.vocabulary[word] = 1
@@ -56,6 +63,12 @@ class mySkipGram:
                     self.vocabulary[word] += 1
         self.length_vocabulary = len(self.vocabulary)
         self.vocabulary_list = list(self.vocabulary)
+<<<<<<< HEAD
+=======
+
+        return vocabulary
+
+>>>>>>> 45f323861f1a00cea90793f6f968675eab238ca7
 
     def word_to_vec(self, word):
 
@@ -75,7 +88,8 @@ class mySkipGram:
                 if word not in self.Dictionary_D:
                     self.Dictionary_D[word] = []
                 for context_word in sentence:
-                    pos_context_word = sentence.index(context_word)
+                    if context_word not in self.Dictionary_D[word]:
+                        pos_context_word = sentence.index(context_word)
 
                     if np.abs(pos_context_word - position) <= int(self.winSize / 2) and np.abs(pos_context_word - position) > 0:
                         self.Dictionary_D[word].append(context_word)
@@ -92,7 +106,6 @@ class mySkipGram:
                     self.Dictionary_D_prime[word] = []
                 for word_context in word_context_list:
                     self.Dictionary_D_prime[word].append[word_context]
-
     def sigmoid(z):
         return 1 / (1 + np.exp(-z))
 
@@ -103,11 +116,12 @@ class mySkipGram:
 
         for word in self.vocabulary_list:
             for word_context in self.Dictionary_D[word]:
-                word_set = [(word, 1)] + [(word_neg, 0) for word_neg in self.vocabulary_list.sample(4)]
+                word_set = [(word_context, 1)] + [(word_neg, 0) for word_neg in self.vocabulary_list.sample(4)]
 
                 for wor, label in word_set:
 
                     self.W_2[:, context_word] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[wor, :], self.W_2[:, word_context])) * W_1[wor, :])
+
 
                     self.W_1[wor, :] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[wor, :], self.W_2[:, word_context])) * W_2[:, word_context])
 
@@ -115,6 +129,9 @@ class mySkipGram:
         raise NotImplementedError('implement it!')
 
     def similarity(self, word1, word2):
+
+        sigmoid(np.dot(self.W_2[word1], self.W_1[word2]))
+
         """
             computes similiarity between the two words. unknown words are mapped to one common vector
         :param word1:
