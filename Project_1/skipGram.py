@@ -1,6 +1,7 @@
 from __future__ import division
 import argparse
 import pandas as pd
+from scipy.special import expit
 
 # useful stuff
 import numpy as np
@@ -34,6 +35,8 @@ class mySkipGram:
         # number of words display in context in answer
         """ code added:"""
 
+        print("init")
+
         self.winSize = winSize
         self.minCount = minCount
         self.learning_rate = 0.17
@@ -48,7 +51,9 @@ class mySkipGram:
 
     def get_vocabulary(self):
 
-        for sentence in sentences:
+        self.vocabulary = {}
+
+        for sentence in self.sentences:
 
             for word in sentence:
                 if word not in self.vocabulary:
@@ -58,7 +63,7 @@ class mySkipGram:
         self.length_vocabulary = len(self.vocabulary)
         self.vocabulary_list = list(self.vocabulary)
 
-        return vocabulary
+        return self.vocabulary
 
     def word_to_vec(self, word):
 
@@ -77,6 +82,7 @@ class mySkipGram:
 
                 if word not in self.Dictionary_D:
                     self.Dictionary_D[word] = []
+
                 for context_word in sentence:
                     if context_word not in self.Dictionary_D[word]:
                         pos_context_word = sentence.index(context_word)
@@ -95,32 +101,42 @@ class mySkipGram:
                 if word not in self.Dictionary_D_prime:
                     self.Dictionary_D_prime[word] = []
                 for word_context in word_context_list:
-                    self.Dictionary_D_prime[word].append[word_context]
+                    self.Dictionary_D_prime[word].append(word_context)
 
-    def sigmoid(z):
-        return 1 / (1 + np.exp(-z))
+    def sigmoid(self, z):
+        return expit(z)
 
     def train(self, stepsize, epochs):
 
         self.generate_D()
         self.generate_D_prime()
 
-        for word in self.vocabulary_list:
+
+        for index_word, word in enumerate(self.vocabulary_list):
             for word_context in self.Dictionary_D[word]:
-                word_set = [(word_context, 1)] + [(word_neg, 0) for word_neg in self.vocabulary_list.sample(4)]
+
+                index_word_context = self.vocabulary_list.index(word_context)
+
+                word_set = [(index_word_context, 1)] + [(self.vocabulary_list.index(word_neg), 0) for word_neg in self.Dictionary_D_prime[word]]
 
                 for wor, label in word_set:
 
-                    self.W_2[context_word, :] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[wor, :], self.W_2[word_context, :])) * W_1[wor, :])
+                    self.W_2[index_word_context, :] += self.learning_rate * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
 
-                    self.W_1[wor, :] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[wor, :], self.W_2[word_context, :])) * W_2[word_context, :])
+                    self.W_1[index_word, :] += self.learning_rate * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
+                print(self.W_1)
+
+        print("finish")
 
     def save(self, path):
         raise NotImplementedError('implement it!')
 
     def similarity(self, word1, word2):
 
-        return sigmoid(np.dot(self.W_2[word1, :], self.W_1[word2, :]))
+        index_word1 = self.vocabulary_list.index(word1)
+        index_word2 = self.vocabulary_list.index(word2)
+
+        return self.sigmoid(np.dot(self.W_2[index_word1, :], self.W_1[index_word2, :]))
 
         """
             computes similiarity between the two words. unknown words are mapped to one common vector
