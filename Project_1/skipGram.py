@@ -106,7 +106,7 @@ class mSkipGram:
 
                     self.W_2[:, context_word] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[wor, :], self.W_2[:, word_context])) * W_1[wor, :])
 
-                    self.W_1[wor, :] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[wor:, ], self.W_2[:, word_context])) * W_2[:, word_context])
+                    self.W_1[wor, :] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[wor, :], self.W_2[:, word_context])) * W_2[:, word_context])
 
     def save(self, path):
         raise NotImplementedError('implement it!')
