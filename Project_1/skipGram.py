@@ -104,9 +104,9 @@ class mSkipGram:
 
                 for wor, label in word_set:
 
-                    self.W_2[wor] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[word], self.W_2[word_context]))) * 1
+                    self.W_2[:, context_word] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[wor, :], self.W_2[:, word_context])) * W_1[wor, :])
 
-                    self.W_1[wor] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[word], self.W_2[word_context])))
+                    self.W_1[wor, :] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[wor:, ], self.W_2[:, word_context])) * W_2[:, word_context])
 
     def save(self, path):
         raise NotImplementedError('implement it!')
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     else:
         pairs = loadPairs(opts.text)
 
-        sg = mSkipGram.load(opts.model)
+        sg = mySkipGram.load(opts.model)
         for a, b, _ in pairs:
             print sg.similarity(a, b)
 
