@@ -27,7 +27,7 @@ def loadPairs(path):
     return pairs
 
 
-class mSkipGram:
+class mySkipGram:
     def __init__(self, sentences, nEmbed=100, negativeRate=5, winSize=5, minCount=5):
         # winSize: Size of th window
         # minCount : minimum times word appears
@@ -36,23 +36,26 @@ class mSkipGram:
 
         self.winSize = winSize
         self.minCount = minCount
-        self.learning_rate = 0.1
-
+        self.learning_rate = 0.17
+        self.sentences = sentences
+        self.nEmbed = nEmbed
+        self.set_vocab()
         # weights of the firts hidden layer
-        self.W_1 = np.random.rand(self.length_vocabulary, nEmbed)
+        self.W_1 = np.random.rand(self.length_vocabulary, self.nEmbed)
 
         # weights of the second hidden layers
-        self.W_2 = np.random.rand(self.length_vocabulary, nEmbed)
+        self.W_2 = np.random.rand(self.length_vocabulary, self.nEmbed)
 
+    def set_vocab(self):
         self.vocabulary = {}
-        for sentence in sentences:
+        for sentence in self.sentences:
             for word in sentence:
-                if word not in vocabulary:
+                if word not in self.vocabulary:
                     self.vocabulary[word] = 1
                 else:
                     self.vocabulary[word] += 1
         self.length_vocabulary = len(self.vocabulary)
-        self.vocabulary_list = list(vocabulary)
+        self.vocabulary_list = list(self.vocabulary)
 
     def word_to_vec(self, word):
 
@@ -64,7 +67,7 @@ class mSkipGram:
 
         self.Dictionary_D = {}
 
-        for sentence in sentences:
+        for sentence in self.sentences:
             for word in sentence:
 
                 position = sentence.index(word)
@@ -81,7 +84,7 @@ class mSkipGram:
 
         self.Dictionary_D_prime = {}
 
-        for sentence in sentences:
+        for sentence in self.sentences:
             for word in sentence:
                 word_context_list = np.random.choice(self.vocabulary_list, 4)
 
@@ -93,10 +96,10 @@ class mSkipGram:
     def sigmoid(z):
         return 1 / (1 + np.exp(-z))
 
-    """end code added"""
-
     def train(self, stepsize, epochs):
-        raise NotImplementedError('implement it!')
+
+        self.generate_D()
+        self.generate_D_prime()
 
         for word in self.vocabulary_list:
             for word_context in self.Dictionary_D[word]:
@@ -145,7 +148,7 @@ if __name__ == '__main__':
 
         sg = mySkipGram.load(opts.model)
         for a, b, _ in pairs:
-            print sg.similarity(a, b)
+            print(sg.similarity(a, b))
 
 
 # test
