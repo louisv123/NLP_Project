@@ -1,7 +1,7 @@
 import skipGram
 import numpy as np
 
-path = 'C:/Users/Louis/Documents/AM2014-2015-2016/2017-2018/Essec-Centrale_Paris/NLP/NLP_Project/Project_1/input-1000.txt'
+path = 'C:/Users/Louis/Documents/AM2014-2015-2016/2017-2018/Essec-Centrale_Paris/NLP/NLP_Project/Project_1/input-100.txt'
 
 
 sentences = skipGram.text2sentences(path)
@@ -9,8 +9,6 @@ sentences = skipGram.text2sentences(path)
 skipmodel = skipGram.mySkipGram(sentences)
 
 skipmodel.train(1, 1)
-
-print(skipmodel.vocabulary_list)
 
 """
 

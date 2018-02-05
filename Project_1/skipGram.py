@@ -29,7 +29,7 @@ def loadPairs(path):
 
 
 class mySkipGram:
-    def __init__(self, sentences, nEmbed=100, negativeRate=5, winSize=5, minCount=5):
+    def __init__(self, sentences, nEmbed=100, negativeRate=5, winSize=5, minCount=3):
         # winSize: Size of th window
         # minCount : minimum times word appears
         # number of words display in context in answer
@@ -49,7 +49,7 @@ class mySkipGram:
         # weights of the second hidden layers
         self.W_2 = np.random.rand(self.length_vocabulary, self.nEmbed)
 
-    def get_vocabulary(self):
+    def get_vocabulary(self, minCount):
 
         self.vocabulary = {}
 
@@ -111,7 +111,6 @@ class mySkipGram:
         self.generate_D()
         self.generate_D_prime()
 
-
         for index_word, word in enumerate(self.vocabulary_list):
             for word_context in self.Dictionary_D[word]:
 
@@ -127,6 +126,8 @@ class mySkipGram:
                 print(self.W_1)
 
         print("finish")
+        print(self.sigmoid(np.dot(self.W_2, self.W_1[1, :])))
+        print(sum(self.sigmoid(np.dot(self.W_2, self.W_1[1, :]))))
 
     def save(self, path):
         raise NotImplementedError('implement it!')
