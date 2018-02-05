@@ -136,8 +136,8 @@ class mySkipGram:
         index_word1 = self.vocabulary_list.index(word1)
         index_word2 = self.vocabulary_list.index(word2)
 
-        return self.sigmoid(np.dot(self.W_2[index_word1, :], self.W_1[index_word2, :]))
 
+        return np.sum(np.multiply(self.sigmoid(np.dot(self.W_2, self.W_1[index_word1, :])),self.sigmoid(np.dot(self.W_2, self.W_1[index_word2, :]))))/(np.linalg.norm(self.sigmoid(np.dot(self.W_2, self.W_1[index_word1, :])))*np.linalg.norm(self.sigmoid(np.dot(self.W_2, self.W_1[index_word2, :]))))
         """
             computes similiarity between the two words. unknown words are mapped to one common vector
         :param word1:
