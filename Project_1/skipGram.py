@@ -31,10 +31,18 @@ class mSkipGram:
     def __init__(self, sentences, nEmbed=100, negativeRate=5, winSize=5, minCount=5):
         # winSize: Size of th window
         # minCount : minimum times word appears
+        # number of words display in context in answer
         """ code added:"""
 
         self.winSize = winSize
         self.minCount = minCount
+        self.learning_rate = 0.1
+
+        # weights of the firts hidden layer
+        self.W_1 = np.random.rand(self.length_vocabulary, nEmbed)
+
+        # weights of the second hidden layers
+        self.W_2 = np.random.rand(self.length_vocabulary, nEmbed)
 
         self.vocabulary = {}
         for sentence in sentences:
@@ -52,26 +60,53 @@ class mSkipGram:
         word_vec[vocabulary_list.index('word')] = 1
         return word_vec
 
-    def context_to_matrix(self, sentence, word):
+    def generate_D(self):
 
-        position = sentence.index(word)
+        self.Dictionary_D = {}
 
-        context_matrix = word_to_vec(word)
+        for sentence in sentences:
+            for word in sentence:
 
-        for context_word in sentence:
-            pos_context_word = sentence.index(context_word)
+                position = sentence.index(word)
 
-            if np.abs(pos_context_word - position) <= int(self.winSize / 2) and np.abs(pos_context_word - position) > 0:
-                context_matrix = np.c_[context_matrix, word_to_vec(context_word)]
-        context_matrix = context_matrix[:, 1:]
-        return context_matrix
+                if word not in self.Dictionary_D:
+                    self.Dictionary_D[word] = []
+                for context_word in sentence:
+                    pos_context_word = sentence.index(context_word)
 
-        """end code added"""
+                    if np.abs(pos_context_word - position) <= int(self.winSize / 2) and np.abs(pos_context_word - position) > 0:
+                        self.Dictionary_D[word].append(context_word)
 
-        raise NotImplementedError('implement it!')
+    def generate_D_prime(self):
+
+        self.Dictionary_D_prime = {}
+
+        for sentence in sentences:
+            for word in sentence:
+                word_context_list = np.random.choice(self.vocabulary_list, 4)
+
+                if word not in self.Dictionary_D_prime:
+                    self.Dictionary_D_prime[word] = []
+                for word_context in word_context_list:
+                    self.Dictionary_D_prime[word].append[word_context]
+
+    def sigmoid(z):
+        return 1 / (1 + np.exp(-z))
+
+    """end code added"""
 
     def train(self, stepsize, epochs):
         raise NotImplementedError('implement it!')
+
+        for word in self.vocabulary_list:
+            for word_context in self.Dictionary_D[word]:
+                word_set = [(word, 1)] + [(word_neg, 0) for word_neg in self.vocabulary_list.sample(4)]
+
+                for wor, label in word_set:
+
+                    self.W_2[wor] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[word], self.W_2[word_context]))) * 1
+
+                    self.W_1[wor] += self.learning_rate * (label - sigmoid(np.dot(self.W_1[word], self.W_2[word_context])))
 
     def save(self, path):
         raise NotImplementedError('implement it!')
@@ -84,14 +119,6 @@ class mSkipGram:
         :return: a float \in [0,1] indicating the similarity (the higher the more similar)
         """
         raise NotImplementedError('implement it!')
-
-    def sigmoid(z):
-        return 1 / (1 + np.exp(-z))
-
-    vector = np.zeros(100)
-    context = np.zeros((100, 10))
-
-    f_ = sum(np.log(sigmoid(np.dot(vector, context)))) + sum(np.log(sigmoid(-np.dot(vector, context))))
 
     @staticmethod
     def load(path):
@@ -122,4 +149,4 @@ if __name__ == '__main__':
 
 
 # test
-#test my branch
+# test my branch

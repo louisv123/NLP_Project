@@ -263,6 +263,8 @@ class TableForNegativeSamples:
                 i += 1
         self.table = table
 
+
+59
     def sample(self, count):
         indices = np.random.randint(low=0, high=len(self.table), size=count)
         return [self.table[i] for i in indices]
