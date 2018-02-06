@@ -55,7 +55,6 @@ class mySkipGram:
 
         self.winSize = winSize
         self.minCount = minCount
-        self.learning_rate = 0.17
         self.sentences = sentences
         self.nEmbed = int(nEmbed)
         self.get_vocabulary(minCount)
@@ -177,9 +176,9 @@ class mySkipGram:
 
                 for wor, label in word_set:
 
-                    self.W_2[index_word_context, :] += self.learning_rate * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
+                    self.W_2[index_word_context, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
 
-                    self.W_1[index_word, :] += self.learning_rate * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
+                    self.W_1[index_word, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
 
         print("finish")
 
