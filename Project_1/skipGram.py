@@ -46,7 +46,7 @@ def clean_sentence(sentence, stopwords):
 class mySkipGram:
 
 
-    def __init__(self, sentences, nEmbed = 100, negativeRate=5, winSize=5, minCount=3):
+    def __init__(self, sentences, nEmbed = 10, negativeRate=5, winSize=5, minCount=3):
 
         # winSize: Size of th window
         # minCount : minimum times word appears
@@ -59,8 +59,6 @@ class mySkipGram:
         self.sentences = sentences
         self.nEmbed = int(nEmbed)
         self.get_vocabulary(minCount)
-
-        print(type(self.nEmbed))
 
         # weights of the firts hidden layer
         self.W_1 = np.random.rand(self.length_vocabulary, self.nEmbed)

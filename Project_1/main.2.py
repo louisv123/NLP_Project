@@ -16,14 +16,12 @@ sentences = skipGram.text2sentences(path, stopwords)
 #initialize the skipgram
 skipmodel = skipGram.mySkipGram(sentences)
 
-print(skipmodel.vocabulary_list)
-
 #train it
 skipmodel.train(1, 1)
 
 #print some similarity to check the algo
 #do only the first 50 2-uplets to check
-limit = 100 #how many 2-uplet similarity you want to print
+limit = 1000 #how many 2-uplet similarity you want to print
 counter = 0 
 
 for a in skipmodel.vocabulary_list:
