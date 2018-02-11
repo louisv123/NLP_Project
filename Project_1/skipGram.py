@@ -7,42 +7,58 @@ from scipy.special import expit
 import numpy as np
 from scipy.special import expit
 from sklearn.preprocessing import normalize
+import re
 
 
 __authors__ = ['Louis_Veillon, Quentin_Boutoille-Blois']
 __emails__ = ['b00727589@essec.edu', 'b00527749@essec.edu']
 
 
-def text2sentences(path):
-    # feel free to make a better tokenization/pre-processing
+def text2sentences(path, stopwords):
+ # feel free to make a better tokenization/pre-processing
     sentences = []
     with open(path) as f:
         for l in f:
-            sentences.append(l.lower().split())
+            sentences.append(clean_sentence(l, stopwords))
     return sentences
-
 
 def loadPairs(path):
     data = pd.read_csv(path, delimiter='\t')
     pairs = zip(data['word1'], data['word2'], data['similarity'])
     return pairs
 
+def loadStopwords(path):
+    #import stopwords file
+    stopwords_file = open(path, 'r') 
+    stopwords = []
+    for word in stopwords_file:
+        stopwords.append(word.strip('\n'))
+
+    return stopwords
+
+def clean_sentence(sentence, stopwords):
+    rx = re.compile('\W+')
+    sentence = str(sentence).lower().split()
+    sentence = [rx.sub(' ',i).strip() for i in sentence if i not in stopwords and rx.sub(' ',i).strip()!= '']
+    return sentence
+
 
 class mySkipGram:
-    def __init__(self, sentences, nEmbed=100, negativeRate=5, winSize=5, minCount=3):
+
+
+    def __init__(self, sentences, nEmbed = 10, negativeRate=5, winSize=5, minCount=3):
+
         # winSize: Size of th window
         # minCount : minimum times word appears
         # number of words display in context in answer
         """ code added:"""
 
-        print("init")
-
         self.winSize = winSize
         self.minCount = minCount
-        self.learning_rate = 0.17
         self.sentences = sentences
-        self.nEmbed = nEmbed
+        self.nEmbed = int(nEmbed)
         self.get_vocabulary(minCount)
+
         # weights of the firts hidden layer
         self.W_1 = np.random.rand(self.length_vocabulary, self.nEmbed)
 
@@ -59,6 +75,12 @@ class mySkipGram:
         for sentence in self.sentences:
 
             for word in sentence:
+
+                if word not in self.vocabulary:
+                    self.vocabulary[word] = 1
+                else:
+                    self.vocabulary[word] += 1
+
                 if word not in self.vocabulary:
                     self.vocabulary[word] = 1
                 else:
@@ -90,8 +112,15 @@ class mySkipGram:
 
         for sentence in self.sentences:
             for word in sentence:
-
                 position = sentence.index(word)
+
+                if word not in self.Dictionary_D:
+                    self.Dictionary_D[word] = []
+
+                for context_word in sentence:
+                    if context_word not in self.Dictionary_D[word]:
+                        pos_context_word = sentence.index(context_word)
+
 
                 if word in self.vocabulary:
 
@@ -115,7 +144,17 @@ class mySkipGram:
 
         for sentence in self.sentences:
             for word in sentence:
+<<<<<<< HEAD
                 word_context_list = np.random.choice(self.vocabulary_list, 10)
+=======
+          
+                word_context_list = np.random.choice(self.vocabulary_list, 4)
+>>>>>>> de7b46b608f691469e5c539307a1a875c4878d40
+
+                if word not in self.Dictionary_D_prime:
+                    self.Dictionary_D_prime[word] = []
+                for word_context in word_context_list:
+                    self.Dictionary_D_prime[word].append(word_context)
 
                 if word in self.vocabulary:
 
@@ -141,9 +180,9 @@ class mySkipGram:
 
                 for wor, label in word_set:
 
-                    self.W_2[index_word_context, :] += self.learning_rate * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
+                    self.W_2[index_word_context, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
 
-                    self.W_1[index_word, :] += self.learning_rate * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
+                    self.W_1[index_word, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
 
         print("finish")
 
