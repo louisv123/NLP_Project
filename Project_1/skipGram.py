@@ -65,7 +65,7 @@ class mySkipGram:
                     self.vocabulary[word] += 1
 
         for word, value in self.vocabulary.items():
-            if value > minCount + 1:
+            if value > minCount:
                 self.vocabulary_filtered[word] = value
 
         self.vocabulary = self.vocabulary_filtered
@@ -115,7 +115,7 @@ class mySkipGram:
 
         for sentence in self.sentences:
             for word in sentence:
-                word_context_list = np.random.choice(self.vocabulary_list, 4)
+                word_context_list = np.random.choice(self.vocabulary_list, 10)
 
                 if word in self.vocabulary:
 
