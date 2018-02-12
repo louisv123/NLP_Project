@@ -81,11 +81,7 @@ class mySkipGram:
                 else:
                     self.vocabulary[word] += 1
 
-                if word not in self.vocabulary:
-                    self.vocabulary[word] = 1
-                else:
-                    self.vocabulary[word] += 1
-
+       
         for word, value in self.vocabulary.items():
             if value > minCount:
                 self.vocabulary_filtered[word] = value
@@ -114,27 +110,18 @@ class mySkipGram:
             for word in sentence:
                 position = sentence.index(word)
 
-                if word not in self.Dictionary_D:
-                    self.Dictionary_D[word] = []
+                if word in self.vocabulary:           # if the word belongs to the filtered vocabulary list (appears more than 3 times)
 
-                for context_word in sentence:
-                    if context_word not in self.Dictionary_D[word]:
-                        pos_context_word = sentence.index(context_word)
-
-
-                if word in self.vocabulary:
-
-                    if word not in self.Dictionary_D:
+                    if word not in self.Dictionary_D:  # if the word is not a key yet 
                         self.Dictionary_D[word] = []
 
                     for context_word in sentence:
-                        if context_word in self.vocabulary:
-                            if context_word not in self.Dictionary_D[word]:
+                        if context_word in self.vocabulary:       # if the word belongs to the filtered vocabulary list
+                            if context_word not in self.Dictionary_D[word]: #if the word does not belong to context word list of the word yet
                                 pos_context_word = sentence.index(context_word)
 
                                 if np.abs(pos_context_word - position) <= int(self.winSize / 2) and np.abs(pos_context_word - position) > 0:
                                     self.Dictionary_D[word].append(context_word)
-
     def generate_D_prime(self):
 
         # generate_D_prime is a function generating false pairs (Word,context).
@@ -142,19 +129,11 @@ class mySkipGram:
 
         self.Dictionary_D_prime = {}
 
+       
         for sentence in self.sentences:
             for word in sentence:
-<<<<<<< HEAD
-                word_context_list = np.random.choice(self.vocabulary_list, 10)
-=======
-          
-                word_context_list = np.random.choice(self.vocabulary_list, 4)
->>>>>>> de7b46b608f691469e5c539307a1a875c4878d40
 
-                if word not in self.Dictionary_D_prime:
-                    self.Dictionary_D_prime[word] = []
-                for word_context in word_context_list:
-                    self.Dictionary_D_prime[word].append(word_context)
+                word_context_list = np.random.choice(self.vocabulary_list, 10)
 
                 if word in self.vocabulary:
 
