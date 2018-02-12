@@ -149,19 +149,21 @@ class mySkipGram:
 
         self.generate_D()
         self.generate_D_prime()
+       for ep in range(epochs):
+        
+         print("epoch : " + str(ep) + "/" + str(epochs))
+         for index_word, word in enumerate(self.vocabulary_list):
+             for word_context in self.Dictionary_D[word]:
 
-        for index_word, word in enumerate(self.vocabulary_list):
-            for word_context in self.Dictionary_D[word]:
+                 index_word_context = self.vocabulary_list.index(word_context)
 
-                index_word_context = self.vocabulary_list.index(word_context)
+                 word_set = [(index_word_context, 1)] + [(self.vocabulary_list.index(word_neg), 0) for word_neg in self.Dictionary_D_prime[word]]
 
-                word_set = [(index_word_context, 1)] + [(self.vocabulary_list.index(word_neg), 0) for word_neg in self.Dictionary_D_prime[word]]
+                 for wor, label in word_set:
 
-                for wor, label in word_set:
+                     self.W_2[index_word_context, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
 
-                    self.W_2[index_word_context, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
-
-                    self.W_1[index_word, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
+                     self.W_1[index_word, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
 
         print("finish")
 
