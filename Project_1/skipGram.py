@@ -29,7 +29,7 @@ def loadPairs(path):
 
 def loadStopwords(path):
     #import stopwords file
-    stopwords_file = open(path, 'r') 
+    stopwords_file = open(path, 'r')
     stopwords = []
     for word in stopwords_file:
         stopwords.append(word.strip('\n'))
@@ -81,7 +81,7 @@ class mySkipGram:
                 else:
                     self.vocabulary[word] += 1
 
-       
+
         for word, value in self.vocabulary.items():
             if value > minCount:
                 self.vocabulary_filtered[word] = value
@@ -112,7 +112,7 @@ class mySkipGram:
 
                 if word in self.vocabulary:           # if the word belongs to the filtered vocabulary list (appears more than 3 times)
 
-                    if word not in self.Dictionary_D:  # if the word is not a key yet 
+                    if word not in self.Dictionary_D:  # if the word is not a key yet
                         self.Dictionary_D[word] = []
 
                     for context_word in sentence:
@@ -129,7 +129,7 @@ class mySkipGram:
 
         self.Dictionary_D_prime = {}
 
-       
+
         for sentence in self.sentences:
             for word in sentence:
 
@@ -149,21 +149,21 @@ class mySkipGram:
 
         self.generate_D()
         self.generate_D_prime()
-       for ep in range(epochs):
-        
-         print("epoch : " + str(ep) + "/" + str(epochs))
-         for index_word, word in enumerate(self.vocabulary_list):
-             for word_context in self.Dictionary_D[word]:
+        for ep in range(epochs):
 
-                 index_word_context = self.vocabulary_list.index(word_context)
+            print("epoch : " + str(ep) + "/" + str(epochs))
+            for index_word, word in enumerate(self.vocabulary_list):
+                for word_context in self.Dictionary_D[word]:
 
-                 word_set = [(index_word_context, 1)] + [(self.vocabulary_list.index(word_neg), 0) for word_neg in self.Dictionary_D_prime[word]]
+                    index_word_context = self.vocabulary_list.index(word_context)
 
-                 for wor, label in word_set:
+                    word_set = [(index_word_context, 1)] + [(self.vocabulary_list.index(word_neg), 0) for word_neg in self.Dictionary_D_prime[word]]
 
-                     self.W_2[index_word_context, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
+                    for wor, label in word_set:
 
-                     self.W_1[index_word, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
+                        self.W_2[index_word_context, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
+
+                        self.W_1[index_word, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
 
         print("finish")
 
