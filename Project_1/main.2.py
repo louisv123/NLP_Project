@@ -1,4 +1,5 @@
 import skipGram
+import numpy as np
 
 path = '/home/quentinbb/class/nlp/NLP_Project/Project_1/input-1000.txt'
 stopwords_path = '/home/quentinbb/class/nlp/NLP_Project/Project_1/stopwords.csv'
@@ -15,19 +16,28 @@ sentences = skipGram.text2sentences(path, stopwords)
 skipmodel = skipGram.mySkipGram(sentences)
 
 #train it
-skipmodel.train(0.5,1)
+skipmodel.train(0.01,10)
 
-#print some similarity to check the algo
-#do only the first 'limi'-2-uplets to check
-limit = 1000 #how many 2-uplet similarity you want to print
+skipmodel.save('/home/quentinbb/class/nlp/model_saved')
+
+skipmodel2 = skipmodel.load('/home/quentinbb/class/nlp/model_saved')
+
+print("-> Displaying some random similarity example:")
+#do only the first 'limit'-2-uplets to check
+limit = 100 #how many 2-uplet similarity you want to print
 counter = 0 
 
-for a in skipmodel.vocabulary_list:
-    for b in skipmodel.vocabulary_list:
-    	print(a, b, skipmodel.similarity(a, b))
+for i in range(limit):
+	a = np.random.randint(len(skipmodel2.vocabulary_list))
+	b = np.random.randint(len(skipmodel2.vocabulary_list))
 
-    	counter +=1
-    	if counter > limit:
-    		break
+	a_item = skipmodel2.vocabulary_list[a]
+	b_item = skipmodel2.vocabulary_list[b]
+
+	print(a_item, b_item, skipmodel2.similarity(a_item, b_item))
+	
+	counter +=1
+	if counter > limit:
+		break
 
 

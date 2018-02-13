@@ -1,14 +1,13 @@
 from __future__ import division
 import argparse
 import pandas as pd
-from scipy.special import expit
 
 # useful stuff
 import numpy as np
 from scipy.special import expit
 from sklearn.preprocessing import normalize
 import re
-
+import json
 
 __authors__ = ['Louis_Veillon, Quentin_Boutoille-Blois']
 __emails__ = ['b00727589@essec.edu', 'b00527749@essec.edu']
@@ -64,6 +63,10 @@ class mySkipGram:
 
         # weights of the second hidden layers
         self.W_2 = np.random.rand(self.length_vocabulary, self.nEmbed)
+
+        self.weights1_file = 'weight2.csv'
+        self.weights2_file = 'weight1.csv'
+        self.vocab_file = 'save_voca.csv'
 
     def get_vocabulary(self, minCount):
 
@@ -129,11 +132,19 @@ class mySkipGram:
 
         self.Dictionary_D_prime = {}
 
+        #generate the negative sampling probability based on word frequencies
+        count_list = [] #initialize a list of the word frequencies
+        for key in self.vocabulary: #loop over the vocabulary key
+            count_list.append(self.vocabulary[key]) #add each word frequency to a list
+
+        frequencies = np.asarray(count_list) #get the word frequency into a np array
+        proba = np.power(frequencies, 3/4) #power to 3/4
+        proba = proba/np.sum(proba) #divide each powered frequency by the sum of all
 
         for sentence in self.sentences:
             for word in sentence:
 
-                word_context_list = np.random.choice(self.vocabulary_list, 10)
+                word_context_list = np.random.choice(self.vocabulary_list, size =10, p = proba)
 
                 if word in self.vocabulary:
 
@@ -147,11 +158,13 @@ class mySkipGram:
 
     def train(self, stepsize, epochs):
 
+        print("Training started...")
+
         self.generate_D()
         self.generate_D_prime()
         for ep in range(epochs):
 
-            print("epoch : " + str(ep) + "/" + str(epochs))
+            print("Epoch: " + str(ep) + "/" + str(epochs))
             for index_word, word in enumerate(self.vocabulary_list):
                 for word_context in self.Dictionary_D[word]:
 
@@ -165,11 +178,29 @@ class mySkipGram:
 
                         self.W_1[index_word, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
 
-        print("finish")
+        print("Training completed")
 
     def save(self, path):
-        raise NotImplementedError('implement it!')
 
+        var = self.__dict__.copy()
+        
+        #changing some types in order to get them into a json 
+        #var['vocabulary'] = var['vocabulary'].to_json()
+
+        var['vocabulary'] = json.dumps(var['vocabulary'])
+        var['W_1'] = var['W_1'].tolist()
+        var['W_2'] = var['W_2'].tolist()
+        
+        # writing vars
+        with open(path, 'w', encoding = "utf-8") as file:
+            file.write(json.dumps(var))
+        file.close()
+
+        print("The model has been saved successfully")
+
+        pass
+
+        
     def similarity(self, word1, word2):
 
         index_word1 = self.vocabulary_list.index(word1)
@@ -189,7 +220,24 @@ class mySkipGram:
 
     @staticmethod
     def load(path):
-        raise NotImplementedError('implement it!')
+
+        with open(path, 'r', encoding = "utf-8") as file:
+            var = json.load(file)
+        file.close
+        # instantiating without calling __init__ constructor
+        new_skip_gram = mySkipGram.__new__(mySkipGram)
+        
+        # changing some var into their normal type
+        var['vocabulary'] = pd.read_json(var['vocabulary'], typ= 'series', orient = 'records')
+        var['W_1'] = np.array(var['W_1']).reshape(var["length_vocabulary"], var["nEmbed"])
+        var['W_é'] = np.array(var['W_2']).reshape(var["nEmbed"], var["length_vocabulary"])
+        
+        # setting attributes to the new instance
+        for attribute, attribute_value in var.items():
+            setattr(new_skip_gram, attribute, attribute_value)
+        print("The model has been loaded successfully")
+        return new_skip_gram
+        pass
 
 
 if __name__ == '__main__':
