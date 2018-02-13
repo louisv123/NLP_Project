@@ -45,25 +45,19 @@ def clean_sentence(sentence, stopwords):
 class mySkipGram:
 
 
-    def __init__(self, sentences, nEmbed = 10, negativeRate=5, winSize=5, minCount=3):
+    def __init__(self, sentences, nEmbed = 10, negativeRate=10, winSize=5, minCount=2):
 
         # winSize: Size of th window
         # minCount : minimum times word appears
-        # number of words display in context in answer
-        """ code added:"""
-
+       
         self.winSize = winSize
         self.minCount = minCount
         self.sentences = sentences
         self.nEmbed = int(nEmbed)
+        self.negativeRate=negativeRate
         self.get_vocabulary(minCount)
 
-        # weights of the firts hidden layer
-        self.W_1 = np.random.rand(self.length_vocabulary, self.nEmbed)
-
-        # weights of the second hidden layers
-        self.W_2 = np.random.rand(self.length_vocabulary, self.nEmbed)
-
+        
         self.weights1_file = 'weight2.csv'
         self.weights2_file = 'weight1.csv'
         self.vocab_file = 'save_voca.csv'
@@ -94,7 +88,7 @@ class mySkipGram:
         self.vocabulary_list = list(self.vocabulary)
 
         return self.vocabulary
-
+    """
     def word_to_vec(self, word):
 
         # transform a word into a hot vector
@@ -102,6 +96,7 @@ class mySkipGram:
         word_vec = np.zeros(self.length_vocabulary)
         word_vec[vocabulary_list.index('word')] = 1
         return word_vec
+    """
 
     def generate_D(self):
 
@@ -144,9 +139,9 @@ class mySkipGram:
         for sentence in self.sentences:
             for word in sentence:
 
-                word_context_list = np.random.choice(self.vocabulary_list, size =10, p = proba)
+                word_context_list = np.random.choice(self.vocabulary_list_new, size =self.negativeRate, p = proba)
 
-                if word in self.vocabulary:
+                if word in self.vocabulary_new:
 
                     if word not in self.Dictionary_D_prime:
                         self.Dictionary_D_prime[word] = []
@@ -159,25 +154,46 @@ class mySkipGram:
     def train(self, stepsize, epochs):
 
         print("Training started...")
-
+        # create D, the true Data Set (word, context)
         self.generate_D()
+        
+        #remove word from the vocabulary having no context word
+        self.vocabulary_list_new = []
+        for index_word, word in enumerate(self.vocabulary_list):
+            if len(self.Dictionary_D[word]) != 0:
+                self.vocabulary_list_new.append(word)
+            
+        self.length_vocabulary_new = len(self.vocabulary_list_new)
+       
+        # weights W_w
+        self.W_1 = np.random.rand(self.length_vocabulary_new, self.nEmbed)
+
+        # weights W_c
+        self.W_2 = np.random.rand(self.length_vocabulary_new, self.nEmbed)
+        # intermediary variable
+        self.W_2_ = np.random.rand(self.length_vocabulary_new, self.nEmbed)
+
         self.generate_D_prime()
+        
         for ep in range(epochs):
 
             print("Epoch: " + str(ep) + "/" + str(epochs))
-            for index_word, word in enumerate(self.vocabulary_list):
+            for index_word, word in enumerate(self.vocabulary_list_new):
                 for word_context in self.Dictionary_D[word]:
 
-                    index_word_context = self.vocabulary_list.index(word_context)
+                    index_word_context = self.vocabulary_list_new.index(word_context)
 
-                    word_set = [(index_word_context, 1)] + [(self.vocabulary_list.index(word_neg), 0) for word_neg in self.Dictionary_D_prime[word]]
+                    word_set = [(index_word, 1)] + [(self.vocabulary_list_new.index(word_neg), 0) for word_neg in self.Dictionary_D_prime[word]]
 
                     for wor, label in word_set:
+                        #update W_2_
+                        self.W_2_[wor, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word_context, :], self.W_2[wor, :]))) * self.W_1[index_word_context, :]
+                        #update W_1
+                        self.W_1[index_word_context, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word_context, :], self.W_2[wor, :]))) * self.W_2[wor, :]
+                        #update W_2
+                        self.W_2[wor, :] = self.W_2_[wor, :]
 
-                        self.W_2[index_word_context, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_1[index_word, :])
-
-                        self.W_1[index_word, :] += stepsize * (label - self.sigmoid(np.dot(self.W_1[index_word, :], self.W_2[index_word_context, :])) * self.W_2[index_word_context, :])
-
+                        
         print("Training completed")
 
     def save(self, path):
@@ -203,11 +219,11 @@ class mySkipGram:
         
     def similarity(self, word1, word2):
 
-        index_word1 = self.vocabulary_list.index(word1)
-        index_word2 = self.vocabulary_list.index(word2)
+        index_word1 = self.vocabulary_list_new.index(word1)
+        index_word2 = self.vocabulary_list_new.index(word2)
 
         """ to compute the similarity between two words, we compute the formula v1.v2/(||v1||*||v2||)
-        where v1 and v2 are the hot vector
+        where v1 and v2 probability vector , (output vector).
         """
 
         return np.sum(np.multiply(self.sigmoid(np.dot(self.W_2, self.W_1[index_word1, :])), self.sigmoid(np.dot(self.W_2, self.W_1[index_word2, :])))) / (np.linalg.norm(self.sigmoid(np.dot(self.W_2, self.W_1[index_word1, :]))) * np.linalg.norm(self.sigmoid(np.dot(self.W_2, self.W_1[index_word2, :]))))
