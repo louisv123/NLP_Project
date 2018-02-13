@@ -1,14 +1,14 @@
 # NLP_Project
 Project_1 : Skip Gram computation
 
-The project aims at modeling Skip Gram  algorithm with negatie sampling method
+The project aims at modeling Skip Gram  algorithm with negative sampling method
 
 ## Run
 
 In `main.2.py` you have to :
 - Set the input text path, here our input text is `input-1000.txt`
 - Set the input stop word file path, here our stop word file is `stopwords.csv`
-- Set the path where you want to save you files
+- Set the path where you want to save your files
 
 ## Tune parameters
 
