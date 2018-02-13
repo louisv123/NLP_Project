@@ -21,5 +21,5 @@ We save the Weights associated to contexts and words and the vocabulary list.
 
 ## Print
 
-We print similiraty of 100 couple of words.
+We print similiraty of 100 couples of words.
 
