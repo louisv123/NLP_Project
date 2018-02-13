@@ -12,8 +12,8 @@ In `main.3.py` you have to :
 
 ## Tune parameters
 
-In `main.3.py` you can tune stepSize (learning rate in the gradient descent) and number of epoch in `skipmodel.train(stepSize,epoch)`
-In `skipGram.py` you can tune Context words window `winSize`, the number of Embedded dimension `nEmbed`, the number of negative sampling for one true example `negativeRate`and the number of time a word is at least compted `minCount`.
+In `main.3.py` you can tune stepSize (learning rate in the gradient descent) and number of epoch in `skipmodel.train(stepSize,epoch)`.
+In `skipGram.py` you can tune Context words window `winSize`, the number of Embedded dimension `nEmbed`, the number of negative sampling for one true example `negativeRate`and the number of time a word is at least counted `minCount`.
 
 ## Save
 
